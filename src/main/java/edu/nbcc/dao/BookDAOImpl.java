@@ -3,6 +3,7 @@ package edu.nbcc.dao;
 import edu.nbcc.model.Book;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BookDAOImpl implements BookDAO {
@@ -118,16 +119,81 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public List<Book> findAll() {
-        return null;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        List<Book> list = new ArrayList<Book>();
+
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(FIND_ALL);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                Book book = new Book();
+                book.setId(rs.getInt("id"));
+                book.setName(rs.getString("name"));
+                book.setTerm(rs.getInt("term"));
+                book.setPrice(rs.getDouble("price"));
+                list.add(book);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        } finally {
+            close(conn);
+            close(statement);
+        }
+        return list;
     }
 
     @Override
     public Book findByName(String name) {
-        return null;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(FIND_BY_NAME);
+            statement.setString(1, name);
+            ResultSet rs = statement.executeQuery();
+            Book book = new Book();
+            if (rs.next()) {
+                book.setId(rs.getInt("id"));
+                book.setName(rs.getString("name"));
+                book.setTerm(rs.getInt("term"));
+                book.setPrice(rs.getDouble("price"));
+            }
+            return book;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        } finally {
+            close(conn);
+            close(statement);
+        }
     }
 
     @Override
     public Book findById(int id) {
-        return null;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(FIND_BY_ID);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            Book book = new Book();
+            if (rs.next()) {
+                book.setId(rs.getInt("id"));
+                book.setName(rs.getString("name"));
+                book.setTerm(rs.getInt("term"));
+                book.setPrice(rs.getDouble("price"));
+            }
+            return book;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        } finally {
+            close(conn);
+            close(statement);
+        }
     }
 }
